@@ -5,7 +5,7 @@ import {
   ChevronDown, Calendar, DollarSign, AlertTriangle, RefreshCw,
   Landmark, Smartphone, Check, Clock, X, ChevronRight, LogOut, User,
   Plus, Trash2, Ban, Pencil, Save, Download, UserPlus, Monitor,
-  CheckCircle2, XCircle, Globe,
+  CheckCircle2, XCircle, Globe, Radio, MessageCircle,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -100,13 +100,24 @@ const statCards = [
 ];
 
 const methodBadge = {
-  MTN: { bg: "bg-amber-100", fg: "text-amber-600", label: "MTN" },
-  Orange: { bg: "bg-orange-100", fg: "text-orange-600", label: "Orange" },
-  Alipay: { bg: "bg-blue-100", fg: "text-blue-600", label: "Alipay" },
-  WeChat: { bg: "bg-green-100", fg: "text-green-600", label: "WeChat" },
-  Bank: { bg: "bg-indigo-100", fg: "text-indigo-600", label: "Bank" },
-  Card: { bg: "bg-slate-200", fg: "text-slate-600", label: "Card" },
+  MTN: { bg: "bg-amber-400", fg: "text-white", label: "MTN", icon: Radio },
+  Orange: { bg: "bg-orange-500", fg: "text-white", label: "Orange", icon: Smartphone },
+  Alipay: { bg: "bg-blue-500", fg: "text-white", label: "Alipay", icon: Wallet },
+  WeChat: { bg: "bg-green-500", fg: "text-white", label: "WeChat", icon: MessageCircle },
+  Bank: { bg: "bg-indigo-500", fg: "text-white", label: "Bank", icon: Landmark },
+  Card: { bg: "bg-slate-500", fg: "text-white", label: "Card", icon: CreditCard },
 };
+
+const avatarPalette = [
+  "bg-slate-700", "bg-rose-400", "bg-blue-400", "bg-orange-400", "bg-lime-500",
+  "bg-violet-500", "bg-teal-500", "bg-pink-500", "bg-cyan-600", "bg-amber-600",
+];
+
+function avatarColorFor(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return avatarPalette[Math.abs(hash) % avatarPalette.length];
+}
 
 const liveTransactions = [
   { name: "Amina T.", method: "MTN", amount: "+50,000 FCFA", positive: true, time: "02:44 AM", avatar: "bg-slate-700" },
@@ -310,11 +321,27 @@ function Logo() {
 }
 
 function MethodTag({ name }) {
-  const m = methodBadge[name] || { bg: "bg-slate-100", fg: "text-slate-600", label: name };
+  const m = methodBadge[name] || { bg: "bg-slate-400", fg: "text-white", label: name, icon: CreditCard };
+  const Icon = m.icon || CreditCard;
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold ${m.bg} ${m.fg}`}>
-      {m.label}
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`flex h-5 w-5 items-center justify-center rounded-md ${m.bg} ${m.fg} shrink-0`}>
+        <Icon size={11} strokeWidth={2.5} />
+      </span>
+      <span className="text-[12.5px] font-medium text-slate-600">{m.label}</span>
     </span>
+  );
+}
+
+function UserAvatar({ name, size = "md" }) {
+  const initials = name.split(" ").map((s) => s[0]).join("").slice(0, 2);
+  const sizeClasses = size === "sm" ? "h-7 w-7 text-[10px]" : "h-8 w-8 text-[11px]";
+  return (
+    <div
+      className={`flex ${sizeClasses} shrink-0 items-center justify-center rounded-full ${avatarColorFor(name)} font-semibold text-white`}
+    >
+      {initials}
+    </div>
   );
 }
 
@@ -796,7 +823,12 @@ function OverviewPage({ setSelectedTx, setActiveNav }) {
                     onClick={() => setSelectedTx(t)}
                     className="cursor-pointer border-t border-slate-100 hover:bg-slate-50"
                   >
-                    <td className="py-2.5 text-[13px] text-slate-700">{t.user}</td>
+                    <td className="py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <UserAvatar name={t.user} size="sm" />
+                        <span className="text-[13px] text-slate-700">{t.user}</span>
+                      </div>
+                    </td>
                     <td className="py-2.5"><MethodTag name={t.method} /></td>
                     <td className="py-2.5 text-[13px] font-medium text-slate-800">{t.amount}</td>
                     <td className="py-2.5 text-[13px] text-slate-500">{t.type}</td>
@@ -895,7 +927,12 @@ function UsersPage() {
             ) : (
               visible.map((u) => (
                 <tr key={u.id} className="border-t border-slate-100 hover:bg-slate-50">
-                  <td onClick={() => setSelectedUser(u)} className="cursor-pointer py-2.5 text-[13px] font-medium text-slate-700">{u.name}</td>
+                  <td onClick={() => setSelectedUser(u)} className="cursor-pointer py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <UserAvatar name={u.name} size="sm" />
+                      <span className="text-[13px] font-medium text-slate-700">{u.name}</span>
+                    </div>
+                  </td>
                   <td onClick={() => setSelectedUser(u)} className="cursor-pointer py-2.5 text-[12.5px] text-slate-500">{u.email}</td>
                   <td className="py-2.5 text-[13px] font-medium text-slate-800">{u.balance}</td>
                   <td className="py-2.5"><StatusBadge status={u.kyc} /></td>
@@ -922,8 +959,11 @@ function UsersPage() {
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/30" onClick={() => setSelectedUser(null)}>
           <div onClick={(e) => e.stopPropagation()} className="w-80 rounded-2xl bg-white p-5 shadow-xl">
             <h3 className="mb-3 text-[15px] font-semibold text-slate-800">User detail</h3>
+            <div className="mb-3 flex items-center gap-3 border-b border-slate-100 pb-3">
+              <UserAvatar name={selectedUser.name} />
+              <div className="text-[14px] font-semibold text-slate-800">{selectedUser.name}</div>
+            </div>
             <div className="space-y-2 text-[13px] text-slate-600">
-              <div className="flex justify-between"><span>Name</span><span className="font-medium text-slate-800">{selectedUser.name}</span></div>
               <div className="flex justify-between"><span>Email</span><span className="font-medium text-slate-800">{selectedUser.email}</span></div>
               <div className="flex justify-between"><span>Phone</span><span className="font-medium text-slate-800">{selectedUser.phone}</span></div>
               <div className="flex justify-between"><span>Balance</span><span className="font-medium text-slate-800">{selectedUser.balance}</span></div>
@@ -1034,7 +1074,12 @@ function PaymentsPage({ setSelectedTx }) {
             ) : (
               visible.map((t, i) => (
                 <tr key={i} onClick={() => setSelectedTx(t)} className="cursor-pointer border-t border-slate-100 hover:bg-slate-50">
-                  <td className="py-2.5 text-[13px] text-slate-700">{t.user}</td>
+                  <td className="py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <UserAvatar name={t.user} size="sm" />
+                        <span className="text-[13px] text-slate-700">{t.user}</span>
+                      </div>
+                    </td>
                   <td className="py-2.5"><MethodTag name={t.method} /></td>
                   <td className="py-2.5 text-[13px] font-medium text-slate-800">{t.amount}</td>
                   <td className="py-2.5 text-[13px] text-slate-500">{t.type}</td>
@@ -2071,6 +2116,7 @@ export default function RMBPayDashboard() {
                       className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-slate-50"
                     >
                       <MethodTag name={t.method} />
+                      <UserAvatar name={t.user} size="sm" />
                       <span className="flex-1 truncate text-[13px] text-slate-700">{t.user}</span>
                       <span className="text-[12.5px] font-medium text-slate-500">{t.amount}</span>
                     </button>
@@ -2191,8 +2237,11 @@ export default function RMBPayDashboard() {
             className="w-80 rounded-2xl bg-white p-5 shadow-xl"
           >
             <h3 className="mb-3 text-[15px] font-semibold text-slate-800">Transaction detail</h3>
+            <div className="mb-3 flex items-center gap-3 border-b border-slate-100 pb-3">
+              <UserAvatar name={selectedTx.name || selectedTx.user} />
+              <div className="text-[14px] font-semibold text-slate-800">{selectedTx.name || selectedTx.user}</div>
+            </div>
             <div className="space-y-2 text-[13px] text-slate-600">
-              <div className="flex justify-between"><span>User</span><span className="font-medium text-slate-800">{selectedTx.name || selectedTx.user}</span></div>
               <div className="flex justify-between"><span>Method</span><MethodTag name={selectedTx.method} /></div>
               <div className="flex justify-between"><span>Amount</span><span className="font-medium text-slate-800">{selectedTx.amount}</span></div>
               <div className="flex justify-between"><span>Time</span><span className="text-slate-400">{selectedTx.time}</span></div>
