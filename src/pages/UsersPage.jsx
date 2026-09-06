@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Ban, ShieldCheck, LogOut, Search, User } from "lucide-react";
+import { Ban, ShieldCheck, LogOut, Search } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
-import { fmtRmb, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState } from "../lib/adminUi";
+import { fmtRmb, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState, Avatar } from "../lib/adminUi";
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -89,7 +89,7 @@ export default function UsersPage() {
                   <tr key={u.id} className="border-t border-slate-100">
                     <td className="py-3 pr-2">
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 shrink-0"><User size={14} /></div>
+                        <Avatar url={u.avatar_url} name={u.full_name} size={32} />
                         <div className="min-w-0">
                           <div className="truncate text-[13px] font-medium text-slate-800">{u.full_name || "—"}</div>
                           <div className="truncate text-[11.5px] text-slate-400">{u.email}</div>
@@ -127,7 +127,10 @@ export default function UsersPage() {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 px-4" onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="mb-1 text-[15px] font-semibold text-slate-800">{selected.full_name}</h3>
+            <div className="mb-1 flex items-center gap-3">
+              <Avatar url={selected.avatar_url} name={selected.full_name} size={40} />
+              <h3 className="text-[15px] font-semibold text-slate-800">{selected.full_name}</h3>
+            </div>
             <p className="mb-4 text-[12.5px] text-slate-400">{selected.email} · {selected.rmb_id}</p>
             <div className="space-y-2.5 text-[13px] text-slate-600">
               <div className="flex justify-between"><span>Balance</span><span className="font-medium text-slate-800">{fmtRmb(selected.balance_rmb)}</span></div>

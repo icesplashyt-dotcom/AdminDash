@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { Tag, StatusPill, fmtRmb, fmtFcfa, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState } from "../lib/adminUi";
+import { Tag, StatusPill, fmtRmb, fmtFcfa, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState, Avatar } from "../lib/adminUi";
 
 const TYPE_FILTERS = ["all", "deposit", "withdrawal", "transfer_in", "transfer_out", "recharge"];
 const STATUS_FILTERS = ["all", "completed", "pending", "processing", "verifying", "failed"];
@@ -65,7 +65,12 @@ export default function PaymentsPage({ onSettle }) {
               <tbody>
                 {filtered.map((t) => (
                   <tr key={t.id} onClick={() => setSelected(t)} className="cursor-pointer border-t border-slate-100 hover:bg-slate-50">
-                    <td className="py-3 text-[13px] text-slate-700">{t.user_name || "Unknown"}</td>
+                    <td className="py-3 text-[13px] text-slate-700">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar url={t.user_avatar_url} name={t.user_name} size={26} />
+                        {t.user_name || "Unknown"}
+                      </div>
+                    </td>
                     <td className="py-3 text-[13px] capitalize text-slate-600">{t.type.replace("_", " ")}</td>
                     <td className="py-3"><Tag code={t.provider} /></td>
                     <td className="py-3 text-[13px] font-medium text-slate-800">{fmtRmb(t.amount_rmb)}</td>
@@ -83,8 +88,11 @@ export default function PaymentsPage({ onSettle }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 px-4" onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-[15px] font-semibold text-slate-800">Transaction detail</h3>
+            <div className="mb-4 flex items-center gap-3">
+              <Avatar url={selected.user_avatar_url} name={selected.user_name} size={36} />
+              <span className="text-[14px] font-medium text-slate-800">{selected.user_name}</span>
+            </div>
             <div className="space-y-3 text-[13px] text-slate-600">
-              <div className="flex justify-between"><span>User</span><span className="font-medium text-slate-800">{selected.user_name}</span></div>
               <div className="flex justify-between"><span>Method</span><Tag code={selected.provider} /></div>
               <div className="flex justify-between"><span>Type</span><span className="capitalize">{selected.type.replace("_", " ")}</span></div>
               <div className="flex justify-between"><span>Amount</span><span className="font-medium text-slate-800">{fmtRmb(selected.amount_rmb)} ({fmtFcfa(selected.amount_fcfa)})</span></div>
