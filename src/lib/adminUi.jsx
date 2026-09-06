@@ -1,5 +1,5 @@
 import React from "react";
-import { Smartphone, DollarSign, Landmark } from "lucide-react";
+import { Smartphone, DollarSign, Landmark, MessageCircle, CreditCard } from "lucide-react";
 
 export const providerMeta = {
   mtn: { bg: "bg-amber-100", fg: "text-amber-600", label: "MTN" },
@@ -35,11 +35,103 @@ export function fmtDateTime(ts) {
   return new Date(ts).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+export function Avatar({ url, name, size = 32 }) {
+  const [failed, setFailed] = React.useState(false);
+  const initials = (name || "?")
+    .split(" ")
+    .map((s) => s[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  if (url && !failed) {
+    return (
+      <img
+        src={url}
+        alt={name || ""}
+        onError={() => setFailed(true)}
+        className="rounded-full object-cover shrink-0"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  return (
+    <div
+      className="flex items-center justify-center rounded-full bg-slate-700 font-semibold text-white shrink-0"
+      style={{ width: size, height: size, fontSize: size * 0.36 }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+export function BrandIcon({ code, size = 20 }) {
+  const c = (code || "").toLowerCase();
+  const base = "flex items-center justify-center shrink-0";
+  if (c === "mtn") {
+    return (
+      <div className={`${base} rounded-full`} style={{ width: size, height: size, background: "#FFCB05", border: "1.5px solid #17162B" }}>
+        <span style={{ fontSize: size * 0.28, fontWeight: 800, color: "#17162B", letterSpacing: "-0.3px" }}>MTN</span>
+      </div>
+    );
+  }
+  if (c === "orange") {
+    return (
+      <div className={`${base} rounded-full`} style={{ width: size, height: size, background: "#FF7900" }}>
+        <span style={{ fontSize: size * 0.26, fontWeight: 800, color: "#FFFFFF", fontStyle: "italic" }}>orange</span>
+      </div>
+    );
+  }
+  if (c === "alipay") {
+    return (
+      <div className={`${base} rounded-full`} style={{ width: size, height: size, background: "#1677FF" }}>
+        <span style={{ fontSize: size * 0.5, fontWeight: 700, color: "#FFFFFF", lineHeight: 1 }}>支</span>
+      </div>
+    );
+  }
+  if (c === "wechat") {
+    return (
+      <div className={`${base} rounded-full`} style={{ width: size, height: size, background: "#07C160" }}>
+        <MessageCircle size={size * 0.55} color="#FFFFFF" strokeWidth={2.4} />
+      </div>
+    );
+  }
+  if (c === "visa") {
+    return (
+      <div className={`${base} rounded-md border border-slate-200 bg-white`} style={{ width: size * 1.6, height: size }}>
+        <span style={{ fontSize: size * 0.38, fontWeight: 800, color: "#1A1F71", fontStyle: "italic" }}>VISA</span>
+      </div>
+    );
+  }
+  if (c === "mastercard") {
+    return (
+      <div className={`${base} rounded-md`} style={{ width: size * 1.6, height: size, background: "#16171D" }}>
+        <div className="flex items-center">
+          <div style={{ width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: "#EB4B4B" }} />
+          <div style={{ width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: "#F5A623", opacity: 0.9, marginLeft: -size * 0.16 }} />
+        </div>
+      </div>
+    );
+  }
+  if (c === "bank" || c === "bank_transfer") {
+    return (
+      <div className={`${base} rounded-full bg-indigo-50`} style={{ width: size, height: size }}>
+        <Landmark size={size * 0.55} color="#4F46E5" />
+      </div>
+    );
+  }
+  return (
+    <div className={`${base} rounded-md border border-slate-200 bg-slate-50`} style={{ width: size * 1.4, height: size }}>
+      <CreditCard size={size * 0.55} color="#64748b" />
+    </div>
+  );
+}
+
 export function Tag({ code }) {
   const m = providerMeta[(code || "").toLowerCase()] || { bg: "bg-slate-100", fg: "text-slate-600", label: code || "—" };
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold whitespace-nowrap ${m.bg} ${m.fg}`}>
-      {m.label}
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+      <BrandIcon code={code} size={19} />
+      <span className={`text-xs font-semibold ${m.fg}`}>{m.label}</span>
     </span>
   );
 }
