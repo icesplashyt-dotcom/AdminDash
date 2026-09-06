@@ -7,14 +7,13 @@ export const providerMeta = {
   alipay: { bg: "bg-blue-100", fg: "text-blue-600", label: "Alipay" },
   wechat: { bg: "bg-green-100", fg: "text-green-600", label: "WeChat" },
   bank: { bg: "bg-indigo-100", fg: "text-indigo-600", label: "Bank" },
+  bank_transfer: { bg: "bg-indigo-100", fg: "text-indigo-600", label: "Bank Transfer" },
+  cash_rmb: { bg: "bg-emerald-100", fg: "text-emerald-600", label: "Cash RMB" },
   card: { bg: "bg-slate-200", fg: "text-slate-600", label: "Card" },
-};
-
-export const channelIcon = {
-  alipay: { icon: Smartphone, bg: "bg-blue-100", fg: "text-blue-600" },
-  wechat: { icon: Smartphone, bg: "bg-green-100", fg: "text-green-600" },
-  cash_rmb: { icon: DollarSign, bg: "bg-emerald-100", fg: "text-emerald-600" },
-  bank_transfer: { icon: Landmark, bg: "bg-indigo-100", fg: "text-indigo-600" },
+  visa: { bg: "bg-slate-100", fg: "text-slate-700", label: "Visa" },
+  mastercard: { bg: "bg-slate-100", fg: "text-slate-700", label: "Mastercard" },
+  amex: { bg: "bg-slate-100", fg: "text-slate-700", label: "Amex" },
+  unknown: { bg: "bg-slate-100", fg: "text-slate-500", label: "Transfer" },
 };
 
 export function fmtFcfa(n) {
@@ -109,6 +108,13 @@ export function BrandIcon({ code, size = 20 }) {
           <div style={{ width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: "#EB4B4B" }} />
           <div style={{ width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: "#F5A623", opacity: 0.9, marginLeft: -size * 0.16 }} />
         </div>
+      </div>
+    );
+  }
+  if (c === "cash_rmb") {
+    return (
+      <div className={`${base} rounded-full bg-emerald-50`} style={{ width: size, height: size }}>
+        <DollarSign size={size * 0.55} color="#059669" />
       </div>
     );
   }
