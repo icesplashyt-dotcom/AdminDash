@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { DollarSign } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
-import { channelIcon, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState } from "../lib/adminUi";
+import { BrandIcon, fmtDateTime, SectionCard, PageHeader, EmptyState, LoadingState } from "../lib/adminUi";
 
 export default function ExchangePage() {
   const [rates, setRates] = useState([]);
@@ -57,30 +56,27 @@ export default function ExchangePage() {
           <EmptyState label="No exchange rate channels configured" />
         ) : (
           <div className="space-y-3">
-            {rates.map((r) => {
-              const ic = channelIcon[r.channel] || { icon: DollarSign, bg: "bg-slate-100", fg: "text-slate-500" };
-              return (
-                <div key={r.channel} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span className={`flex h-9 w-9 items-center justify-center rounded-full ${ic.bg} ${ic.fg}`}><ic.icon size={16} /></span>
-                    <div>
-                      <div className="text-[13px] font-medium capitalize text-slate-800">{r.channel.replace("_", " ")}</div>
-                      <div className="text-[11.5px] text-slate-400">Updated {fmtDateTime(r.updated_at)}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={drafts[r.channel] ?? ""}
-                      onChange={(e) => setDrafts((d) => ({ ...d, [r.channel]: e.target.value }))}
-                      className="w-28 rounded-lg border border-slate-200 px-2.5 py-1.5 text-right text-[13px] outline-none focus:border-violet-400"
-                    />
-                    <span className="text-[12px] text-slate-400">FCFA</span>
+            {rates.map((r) => (
+              <div key={r.channel} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <BrandIcon code={r.channel} size={28} />
+                  <div>
+                    <div className="text-[13px] font-medium capitalize text-slate-800">{r.channel.replace("_", " ")}</div>
+                    <div className="text-[11.5px] text-slate-400">Updated {fmtDateTime(r.updated_at)}</div>
                   </div>
                 </div>
-              );
-            })}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={drafts[r.channel] ?? ""}
+                    onChange={(e) => setDrafts((d) => ({ ...d, [r.channel]: e.target.value }))}
+                    className="w-28 rounded-lg border border-slate-200 px-2.5 py-1.5 text-right text-[13px] outline-none focus:border-violet-400"
+                  />
+                  <span className="text-[12px] text-slate-400">FCFA</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
         <button onClick={saveAll} disabled={saving || loading} className="mt-5 w-full rounded-xl bg-violet-600 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-700 disabled:opacity-60">
