@@ -385,13 +385,13 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
             <div className="py-20 text-center text-[13.5px] text-slate-400">Loading dashboard…</div>
           ) : (
             <>
-              <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+              <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-5">
                 {statCards.map((c) => (
-                  <div key={c.title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${c.iconBg} text-white`}><c.icon size={19} /></div>
-                    <div className="text-[12.5px] text-slate-500">{c.title}</div>
-                    <div className="mt-1 text-[20px] font-bold text-slate-900">{c.value}</div>
-                    <div className={`mt-1.5 text-[12px] font-medium ${c.subColor}`}>{c.sub}</div>
+                  <div key={c.title} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm sm:p-5">
+                    <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl sm:mb-4 sm:h-11 sm:w-11 ${c.iconBg} text-white`}><c.icon size={17} className="sm:hidden" /><c.icon size={19} className="hidden sm:block" /></div>
+                    <div className="text-[11.5px] text-slate-500 sm:text-[12.5px]">{c.title}</div>
+                    <div className="mt-1 text-[17px] font-bold text-slate-900 sm:text-[20px]">{c.value}</div>
+                    <div className={`mt-1.5 text-[11px] font-medium sm:text-[12px] ${c.subColor}`}>{c.sub}</div>
                   </div>
                 ))}
               </div>
@@ -486,8 +486,22 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
               <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
                 <SectionCard>
                   <SectionHeader title="Payments Overview" />
-                  <div className="-mx-1 overflow-x-auto">
-                    <table className="w-full min-w-[420px] text-left">
+                  {/* Mobile: stacked cards */}
+                  <div className="space-y-2 sm:hidden">
+                    {payments.map((p) => (
+                      <div key={p.provider} className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2.5">
+                        <Tag code={p.provider} />
+                        <div className="text-right">
+                          <div className="text-[13px] font-medium text-slate-800">{fmtRmb(p.total_amount_rmb)}</div>
+                          <div className="text-[11.5px] text-slate-400">{p.success_rate ?? 0}% success</div>
+                        </div>
+                      </div>
+                    ))}
+                    {payments.length === 0 && <div className="py-6 text-center text-[13px] text-slate-400">No transactions yet</div>}
+                  </div>
+                  {/* Desktop: table */}
+                  <div className="hidden sm:block">
+                    <table className="w-full text-left">
                       <thead><tr className="text-[11.5px] text-slate-400"><th className="px-1 pb-2.5 font-medium">Method</th><th className="px-1 pb-2.5 font-medium">Success</th><th className="px-1 pb-2.5 font-medium">Amount</th></tr></thead>
                       <tbody>
                         {payments.map((p) => (
@@ -505,8 +519,27 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
 
                 <SectionCard>
                   <SectionHeader title="RMB Exchange Rates" action={<button onClick={() => setRatesModalOpen(true)} className="text-[12.5px] font-medium text-violet-600 hover:underline">Manage Rates</button>} />
-                  <div className="-mx-1 overflow-x-auto">
-                    <table className="w-full min-w-[380px] text-left">
+                  {/* Mobile: stacked cards */}
+                  <div className="space-y-2 sm:hidden">
+                    {rates.map((r) => {
+                      const ic = channelIcon[r.channel] || { icon: DollarSign, bg: "bg-slate-100", fg: "text-slate-500" };
+                      return (
+                        <div key={r.channel} className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2.5">
+                          <div className="flex items-center gap-2.5 text-[13px] text-slate-700 capitalize">
+                            <span className={`flex h-6 w-6 items-center justify-center rounded-full ${ic.bg} ${ic.fg}`}><ic.icon size={12} /></span>
+                            {r.channel.replace("_", " ")}
+                          </div>
+                          <div className="text-right">
+                            <div className="text-[13px] font-medium text-slate-800">{Number(r.rate_fcfa).toFixed(2)} FCFA</div>
+                            <div className="text-[11px] text-slate-400">{fmtTime(r.updated_at)}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Desktop: table */}
+                  <div className="hidden sm:block">
+                    <table className="w-full text-left">
                       <thead><tr className="text-[11.5px] text-slate-400"><th className="px-1 pb-2.5 font-medium">Channel</th><th className="px-1 pb-2.5 font-medium">Rate (1 RMB)</th><th className="px-1 pb-2.5 text-right font-medium">Last Updated</th></tr></thead>
                       <tbody>
                         {rates.map((r) => {
