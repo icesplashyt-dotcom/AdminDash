@@ -22,7 +22,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Line,
 } from "recharts";
-import { Tag, Avatar } from "./lib/adminUi";
+import { Tag, Avatar, BrandIcon } from "./lib/adminUi";
 
 const navItems = [
   { label: "Overview", icon: Home },
@@ -39,20 +39,6 @@ const navItems = [
   { label: "Admin Roles", icon: UserCog },
   { label: "Logs", icon: FileText },
 ];
-
-const channelIcon = {
-  alipay: { icon: Smartphone, bg: "bg-blue-100", fg: "text-blue-600" },
-  wechat: { icon: Smartphone, bg: "bg-green-100", fg: "text-green-600" },
-  cash_rmb: { icon: DollarSign, bg: "bg-emerald-100", fg: "text-emerald-600" },
-  bank_transfer: { icon: Landmark, bg: "bg-indigo-100", fg: "text-indigo-600" },
-};
-
-const serviceIcon = {
-  mtn: { bg: "bg-amber-100", fg: "text-amber-600" },
-  orange: { bg: "bg-orange-100", fg: "text-orange-600" },
-  alipay: { bg: "bg-blue-100", fg: "text-blue-600" },
-  wechat: { bg: "bg-green-100", fg: "text-green-600" },
-};
 
 const alertIcon = {
   login_failed: { icon: AlertTriangle, bg: "bg-rose-100", fg: "text-rose-500" },
@@ -499,15 +485,12 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
 
                   <div className="mt-6 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-slate-800">System Status</h3></div>
                   <div className="mt-3 space-y-3">
-                    {services.map((s) => {
-                      const ic = serviceIcon[s.service] || { bg: "bg-slate-100", fg: "text-slate-500" };
-                      return (
-                        <div key={s.service} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5 text-[13px] text-slate-600 capitalize"><span className={`flex h-6 w-6 items-center justify-center rounded-full ${ic.bg} ${ic.fg}`}><Smartphone size={12} /></span>{s.service} Service</div>
-                          <span className={`text-[12.5px] font-medium capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : "text-rose-500"}`}>{s.status}</span>
-                        </div>
-                      );
-                    })}
+                    {services.map((s) => (
+                      <div key={s.service} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5 text-[13px] text-slate-600 capitalize"><BrandIcon code={s.service} size={22} />{s.service} Service</div>
+                        <span className={`text-[12.5px] font-medium capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : "text-rose-500"}`}>{s.status}</span>
+                      </div>
+                    ))}
                   </div>
                 </SectionCard>
               </div>
@@ -550,37 +533,31 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                   <SectionHeader title="RMB Exchange Rates" action={<button onClick={() => setRatesModalOpen(true)} className="text-[12.5px] font-medium text-violet-600 hover:underline">Manage Rates</button>} />
                   {/* Mobile: stacked cards */}
                   <div className="space-y-2 sm:hidden">
-                    {rates.map((r) => {
-                      const ic = channelIcon[r.channel] || { icon: DollarSign, bg: "bg-slate-100", fg: "text-slate-500" };
-                      return (
-                        <div key={r.channel} className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2.5">
-                          <div className="flex items-center gap-2.5 text-[13px] text-slate-700 capitalize">
-                            <span className={`flex h-6 w-6 items-center justify-center rounded-full ${ic.bg} ${ic.fg}`}><ic.icon size={12} /></span>
-                            {r.channel.replace("_", " ")}
-                          </div>
-                          <div className="text-right">
-                            <div className="text-[13px] font-medium text-slate-800">{Number(r.rate_fcfa).toFixed(2)} FCFA</div>
-                            <div className="text-[11px] text-slate-400">{fmtTime(r.updated_at)}</div>
-                          </div>
+                    {rates.map((r) => (
+                      <div key={r.channel} className="flex items-center justify-between rounded-xl border border-slate-100 px-3 py-2.5">
+                        <div className="flex items-center gap-2.5 text-[13px] text-slate-700 capitalize">
+                          <BrandIcon code={r.channel} size={22} />
+                          {r.channel.replace("_", " ")}
                         </div>
-                      );
-                    })}
+                        <div className="text-right">
+                          <div className="text-[13px] font-medium text-slate-800">{Number(r.rate_fcfa).toFixed(2)} FCFA</div>
+                          <div className="text-[11px] text-slate-400">{fmtTime(r.updated_at)}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   {/* Desktop: table */}
                   <div className="hidden sm:block">
                     <table className="w-full text-left">
                       <thead><tr className="text-[11.5px] text-slate-400"><th className="px-1 pb-2.5 font-medium">Channel</th><th className="px-1 pb-2.5 font-medium">Rate (1 RMB)</th><th className="px-1 pb-2.5 text-right font-medium">Last Updated</th></tr></thead>
                       <tbody>
-                        {rates.map((r) => {
-                          const ic = channelIcon[r.channel] || { icon: DollarSign, bg: "bg-slate-100", fg: "text-slate-500" };
-                          return (
-                            <tr key={r.channel} className="border-t border-slate-100">
-                              <td className="px-1 py-3 text-[13px] text-slate-700 capitalize"><div className="flex items-center gap-2.5"><span className={`flex h-6 w-6 items-center justify-center rounded-full ${ic.bg} ${ic.fg}`}><ic.icon size={12} /></span>{r.channel.replace("_", " ")}</div></td>
-                              <td className="px-1 py-3 text-[13px] font-medium text-slate-800">{Number(r.rate_fcfa).toFixed(2)} FCFA</td>
-                              <td className="px-1 py-3 text-right text-[12.5px] text-slate-400">{fmtTime(r.updated_at)}</td>
-                            </tr>
-                          );
-                        })}
+                        {rates.map((r) => (
+                          <tr key={r.channel} className="border-t border-slate-100">
+                            <td className="px-1 py-3 text-[13px] text-slate-700 capitalize"><div className="flex items-center gap-2.5"><BrandIcon code={r.channel} size={22} />{r.channel.replace("_", " ")}</div></td>
+                            <td className="px-1 py-3 text-[13px] font-medium text-slate-800">{Number(r.rate_fcfa).toFixed(2)} FCFA</td>
+                            <td className="px-1 py-3 text-right text-[12.5px] text-slate-400">{fmtTime(r.updated_at)}</td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
