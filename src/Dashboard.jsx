@@ -22,6 +22,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Line,
 } from "recharts";
+import { Tag, Avatar } from "./lib/adminUi";
 
 const navItems = [
   { label: "Overview", icon: Home },
@@ -38,15 +39,6 @@ const navItems = [
   { label: "Admin Roles", icon: UserCog },
   { label: "Logs", icon: FileText },
 ];
-
-const providerMeta = {
-  mtn: { bg: "bg-amber-100", fg: "text-amber-600", label: "MTN" },
-  orange: { bg: "bg-orange-100", fg: "text-orange-600", label: "Orange" },
-  alipay: { bg: "bg-blue-100", fg: "text-blue-600", label: "Alipay" },
-  wechat: { bg: "bg-green-100", fg: "text-green-600", label: "WeChat" },
-  bank: { bg: "bg-indigo-100", fg: "text-indigo-600", label: "Bank" },
-  card: { bg: "bg-slate-200", fg: "text-slate-600", label: "Card" },
-};
 
 const channelIcon = {
   alipay: { icon: Smartphone, bg: "bg-blue-100", fg: "text-blue-600" },
@@ -103,15 +95,6 @@ function timeOfDayGreeting() {
   if (hour >= 12 && hour < 17) return "Good afternoon";
   if (hour >= 17 && hour < 22) return "Good evening";
   return "Good night";
-}
-
-function Tag({ code }) {
-  const m = providerMeta[code?.toLowerCase()] || { bg: "bg-slate-100", fg: "text-slate-600", label: code || "—" };
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold whitespace-nowrap ${m.bg} ${m.fg}`}>
-      {m.label}
-    </span>
-  );
 }
 
 function StatusPill({ status }) {
@@ -493,9 +476,7 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                   <div className="space-y-1">
                     {recentTx.slice(0, 5).map((t) => (
                       <button key={t.id} onClick={() => setSelectedTx(t)} className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-slate-50">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-700 text-[11px] font-semibold text-white shrink-0">
-                          {(t.user_name || "?").split(" ").map((s) => s[0]).join("").slice(0, 2)}
-                        </div>
+                        <Avatar url={t.user_avatar_url} name={t.user_name} size={36} />
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-[13px] font-medium text-slate-700">{t.user_name || "Unknown"}</div>
                           <Tag code={t.provider} />
@@ -652,8 +633,11 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 px-4" onClick={() => setSelectedTx(null)}>
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-[15px] font-semibold text-slate-800">Transaction detail</h3>
+            <div className="mb-4 flex items-center gap-3">
+              <Avatar url={selectedTx.user_avatar_url} name={selectedTx.user_name} size={36} />
+              <span className="text-[14px] font-medium text-slate-800">{selectedTx.user_name}</span>
+            </div>
             <div className="space-y-3 text-[13px] text-slate-600">
-              <div className="flex justify-between"><span>User</span><span className="font-medium text-slate-800">{selectedTx.user_name}</span></div>
               <div className="flex justify-between"><span>Method</span><Tag code={selectedTx.provider} /></div>
               <div className="flex justify-between"><span>Type</span><span className="capitalize">{selectedTx.type}</span></div>
               <div className="flex justify-between"><span>Amount</span><span className="font-medium text-slate-800">{fmtRmb(selectedTx.amount_rmb)} ({fmtFcfa(selectedTx.amount_fcfa)})</span></div>
