@@ -97,6 +97,14 @@ function fmtY(v) {
   return `${(v / 1000000).toFixed(0)}M`;
 }
 
+function timeOfDayGreeting() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  if (hour >= 17 && hour < 22) return "Good evening";
+  return "Good night";
+}
+
 function Tag({ code }) {
   const m = providerMeta[code?.toLowerCase()] || { bg: "bg-slate-100", fg: "text-slate-600", label: code || "—" };
   return (
@@ -159,6 +167,12 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
   const [alerts, setAlerts] = useState([]);
   const [pendingSettlements, setPendingSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [, setClockTick] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setClockTick((t) => t + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   const closeMenus = () => { setNotifOpen(false); setProfileOpen(false); };
 
@@ -404,7 +418,7 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
           ) : (
           <>
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            <h1 className="text-[20px] font-bold text-slate-900 sm:text-[22px]">Good morning, {adminEmail?.split("@")[0] || "Admin"} 👋</h1>
+            <h1 className="text-[20px] font-bold text-slate-900 sm:text-[22px]">{timeOfDayGreeting()}, {adminEmail?.split("@")[0] || "Admin"} 👋</h1>
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[12.5px] font-medium text-emerald-600"><span className="h-2 w-2 rounded-full bg-emerald-500" /> System Online</span>
               <span className="flex items-center gap-1.5 rounded-full bg-violet-50 px-3 py-1.5 text-[12.5px] font-medium text-violet-600"><Repeat size={13} /> Live data</span>
