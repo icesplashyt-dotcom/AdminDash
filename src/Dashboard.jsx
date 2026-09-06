@@ -1,5 +1,17 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { supabase } from "./lib/supabaseClient";
+import UsersPage from "./pages/UsersPage";
+import PaymentsPage from "./pages/PaymentsPage";
+import WalletsPage from "./pages/WalletsPage";
+import CardsPage from "./pages/CardsPage";
+import KycPage from "./pages/KycPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
+import ExchangePage from "./pages/ExchangePage";
+import SecurityPage from "./pages/SecurityPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import SettingsPage from "./pages/SettingsPage";
+import AdminRolesPage from "./pages/AdminRolesPage";
+import LogsPage from "./pages/LogsPage";
 import {
   Home, Users, CreditCard, Wallet, Layers, ShieldCheck, BarChart2,
   Repeat, Shield, Bell, Settings, UserCog, FileText, Search,
@@ -280,6 +292,24 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
       ]
     : [];
 
+  function renderPage() {
+    switch (activeNav) {
+      case "Users": return <UsersPage />;
+      case "Payments": return <PaymentsPage onSettle={settleTx} />;
+      case "Wallets": return <WalletsPage />;
+      case "Cards": return <CardsPage />;
+      case "KYC": return <KycPage />;
+      case "Analytics": return <AnalyticsPage />;
+      case "Exchange": return <ExchangePage />;
+      case "Security": return <SecurityPage />;
+      case "Notifications": return <NotificationsPage />;
+      case "Settings": return <SettingsPage adminEmail={adminEmail} adminRole={adminRole} onSignOut={onSignOut} />;
+      case "Admin Roles": return <AdminRolesPage />;
+      case "Logs": return <LogsPage />;
+      default: return null;
+    }
+  }
+
   return (
     <div className="flex h-full min-h-screen w-full bg-slate-50 text-slate-800" onClick={closeMenus}>
       {sidebarOpen && (
@@ -369,6 +399,10 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          {activeNav !== "Overview" ? (
+            renderPage()
+          ) : (
+          <>
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <h1 className="text-[20px] font-bold text-slate-900 sm:text-[22px]">Good morning, {adminEmail?.split("@")[0] || "Admin"} 👋</h1>
             <div className="flex flex-wrap items-center gap-2.5">
@@ -594,6 +628,8 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                 </SectionCard>
               </div>
             </>
+          )}
+          </>
           )}
         </div>
       </div>
