@@ -1,11 +1,15 @@
 import React from "react";
 import { LogOut, ShieldCheck, Mail } from "lucide-react";
 import { SectionCard, PageHeader } from "../lib/adminUi";
+import SystemStatusCard from "../components/SystemStatusCard";
 
 export default function SettingsPage({ adminEmail, adminRole, onSignOut }) {
   return (
     <div>
       <PageHeader title="Settings" subtitle="Your admin account" />
+
+      <SystemStatusCard adminRole={adminRole} />
+
       <SectionCard className="max-w-md">
         <div className="mb-5 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-violet-500"><ShieldCheck size={20} /></div>
