@@ -121,6 +121,7 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
   const [selectedKyc, setSelectedKyc] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
   const [ratesModalOpen, setRatesModalOpen] = useState(false);
   const [rateDrafts, setRateDrafts] = useState({});
   const [actionError, setActionError] = useState("");
@@ -235,6 +236,20 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
       setActionError(error.message);
     } else {
       setSelectedTx(null);
+      loadAll();
+    }
+  }
+
+  async function setServiceStatus(service, status) {
+    setActionError("");
+    const { error } = await supabase
+      .from("service_status")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("service", service);
+    if (error) {
+      setActionError(error.message);
+    } else {
+      setSelectedService(null);
       loadAll();
     }
   }
@@ -486,10 +501,10 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                   <div className="mt-6 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-slate-800">System Status</h3></div>
                   <div className="mt-3 space-y-3">
                     {services.map((s) => (
-                      <div key={s.service} className="flex items-center justify-between">
+                      <button key={s.service} onClick={() => setSelectedService(s)} className="flex w-full items-center justify-between rounded-lg px-1 py-0.5 hover:bg-slate-50">
                         <div className="flex items-center gap-2.5 text-[13px] text-slate-600 capitalize"><BrandIcon code={s.service} size={22} />{s.service} Service</div>
-                        <span className={`text-[12.5px] font-medium capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : "text-rose-500"}`}>{s.status}</span>
-                      </div>
+                        <span className={`text-[12.5px] font-medium capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : s.status === "maintenance" ? "text-blue-500" : "text-rose-500"}`}>{s.status}</span>
+                      </button>
                     ))}
                   </div>
                 </SectionCard>
@@ -651,6 +666,42 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
               </div>
             )}
             <button onClick={() => setSelectedKyc(null)} className="mt-2 w-full rounded-xl py-2.5 text-[13px] font-semibold text-slate-500 hover:bg-slate-50">Close</button>
+          </div>
+        </div>
+      )}
+
+      {selectedService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 px-4" onClick={() => setSelectedService(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center gap-3">
+              <BrandIcon code={selectedService.service} size={30} />
+              <h3 className="text-[15px] font-semibold capitalize text-slate-800">{selectedService.service} Service</h3>
+            </div>
+            <p className="mb-4 text-[12.5px] text-slate-500">
+              Current status: <span className="font-medium capitalize text-slate-800">{selectedService.status}</span>
+            </p>
+            {adminRole !== "superadmin" ? (
+              <p className="rounded-xl bg-orange-50 px-3 py-2.5 text-[12.5px] text-orange-600">Only superadmins can change service status.</p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "operational", label: "Operational", cls: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
+                  { value: "degraded", label: "Degraded", cls: "bg-orange-50 text-orange-600 hover:bg-orange-100" },
+                  { value: "maintenance", label: "Maintenance", cls: "bg-blue-50 text-blue-600 hover:bg-blue-100" },
+                  { value: "down", label: "Down", cls: "bg-rose-50 text-rose-600 hover:bg-rose-100" },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    disabled={selectedService.status === opt.value}
+                    onClick={() => setServiceStatus(selectedService.service, opt.value)}
+                    className={`rounded-xl py-2.5 text-[13px] font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${opt.cls}`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setSelectedService(null)} className="mt-3 w-full rounded-xl py-2.5 text-[13px] font-semibold text-slate-500 hover:bg-slate-50">Close</button>
           </div>
         </div>
       )}
