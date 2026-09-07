@@ -428,6 +428,23 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                 ))}
               </div>
 
+              <SectionCard className="mb-6">
+                <SectionHeader title="System Status" />
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {services.map((s) => (
+                    <button
+                      key={s.service}
+                      onClick={() => setSelectedService(s)}
+                      className="flex items-center justify-between gap-2 rounded-xl border border-slate-100 px-3 py-2.5 text-left hover:bg-slate-50"
+                    >
+                      <div className="flex items-center gap-2 text-[13px] capitalize text-slate-600"><BrandIcon code={s.service} size={22} />{s.service}</div>
+                      <span className={`text-[11.5px] font-semibold capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : s.status === "maintenance" ? "text-blue-500" : "text-rose-500"}`}>{s.status}</span>
+                    </button>
+                  ))}
+                  {services.length === 0 && <div className="col-span-full py-2 text-[13px] text-slate-400">No services configured</div>}
+                </div>
+              </SectionCard>
+
               {pendingSettlements.length > 0 && (
                 <SectionCard className="mb-6 border-orange-200">
                   <SectionHeader title={`Pending Settlements (${pendingSettlements.length})`} />
@@ -496,16 +513,6 @@ export default function Dashboard({ adminEmail, adminRole, onSignOut }) {
                     <div className="flex items-center justify-between"><div className="flex items-center gap-2.5 text-[13px] text-slate-600"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-500"><Clock size={12} /></span>Pending</div><span className="text-[13px] font-semibold text-slate-800">{kycCounts.pending || 0}</span></div>
                     <div className="flex items-center justify-between"><div className="flex items-center gap-2.5 text-[13px] text-slate-600"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-500"><Check size={12} /></span>Approved</div><span className="text-[13px] font-semibold text-slate-800">{kycCounts.approved || 0}</span></div>
                     <div className="flex items-center justify-between"><div className="flex items-center gap-2.5 text-[13px] text-slate-600"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-500"><X size={12} /></span>Rejected</div><span className="text-[13px] font-semibold text-slate-800">{kycCounts.rejected || 0}</span></div>
-                  </div>
-
-                  <div className="mt-6 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-slate-800">System Status</h3></div>
-                  <div className="mt-3 space-y-3">
-                    {services.map((s) => (
-                      <button key={s.service} onClick={() => setSelectedService(s)} className="flex w-full items-center justify-between rounded-lg px-1 py-0.5 hover:bg-slate-50">
-                        <div className="flex items-center gap-2.5 text-[13px] text-slate-600 capitalize"><BrandIcon code={s.service} size={22} />{s.service} Service</div>
-                        <span className={`text-[12.5px] font-medium capitalize ${s.status === "operational" ? "text-emerald-500" : s.status === "degraded" ? "text-orange-500" : s.status === "maintenance" ? "text-blue-500" : "text-rose-500"}`}>{s.status}</span>
-                      </button>
-                    ))}
                   </div>
                 </SectionCard>
               </div>
