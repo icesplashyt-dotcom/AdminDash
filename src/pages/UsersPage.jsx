@@ -72,10 +72,11 @@ export default function UsersPage() {
           <EmptyState label="No users match your search" />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-left">
+            <table className="w-full min-w-[760px] text-left">
               <thead>
                 <tr className="text-[11.5px] text-slate-400">
                   <th className="pb-2.5 font-medium">User</th>
+                  <th className="pb-2.5 font-medium">Phone</th>
                   <th className="pb-2.5 font-medium">RMB ID</th>
                   <th className="pb-2.5 font-medium">Balance</th>
                   <th className="pb-2.5 font-medium">KYC</th>
@@ -96,6 +97,7 @@ export default function UsersPage() {
                         </div>
                       </div>
                     </td>
+                    <td className="py-3 text-[12.5px] text-slate-500 whitespace-nowrap">{u.phone || "—"}</td>
                     <td className="py-3 text-[12.5px] text-slate-500">{u.rmb_id}</td>
                     <td className="py-3 text-[13px] font-medium text-slate-800">{fmtRmb(u.balance_rmb)}</td>
                     <td className="py-3">
